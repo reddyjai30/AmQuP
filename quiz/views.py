@@ -1,5 +1,6 @@
 import datetime
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.decorators.http import require_safe, require_POST,require_GET
 from .models import Quiz, Question, StudentAnswer
 from main.models import Student, Course, Faculty
 from main.views import is_faculty_authorised, is_student_authorised
@@ -9,6 +10,7 @@ from django.db.models import Count, Sum, F, FloatField, Q, Prefetch
 from django.db.models.functions import Cast
 
 
+@require_POST
 def quiz(request, code):
     try:
         course = Course.objects.get(code=code)
@@ -32,6 +34,7 @@ def quiz(request, code):
         return render(request, 'error.html')
 
 
+@require_POST
 def addQuestion(request, code, quiz_id):
     try:
         course = Course.objects.get(code=code)
@@ -61,6 +64,7 @@ def addQuestion(request, code, quiz_id):
         return render(request, 'error.html')
 
 
+@require_safe
 def allQuizzes(request, code):
     if is_faculty_authorised(request, code):
         course = Course.objects.get(code=code)
@@ -77,6 +81,7 @@ def allQuizzes(request, code):
         return redirect('std_login')
 
 
+@require_safe
 def myQuizzes(request, code):
     if is_student_authorised(request, code):
         course = Course.objects.get(code=code)
@@ -124,6 +129,7 @@ def myQuizzes(request, code):
         return redirect('std_login')
 
 
+@require_safe
 def startQuiz(request, code, quiz_id):
     if is_student_authorised(request, code):
         course = Course.objects.get(code=code)
@@ -140,7 +146,7 @@ def startQuiz(request, code, quiz_id):
     else:
         return redirect('std_login')
 
-
+@require_safe
 def studentAnswer(request, code, quiz_id):
     if is_student_authorised(request, code):
         course = Course.objects.get(code=code)
@@ -162,6 +168,7 @@ def studentAnswer(request, code, quiz_id):
         return redirect('std_login')
 
 
+@require_safe
 def quizResult(request, code, quiz_id):
     if is_student_authorised(request, code):
         course = Course.objects.get(code=code)
@@ -204,6 +211,7 @@ def quizResult(request, code, quiz_id):
         return redirect('std_login')
 
 
+@require_safe
 def quizSummary(request, code, quiz_id):
     if is_faculty_authorised(request, code):
         course = Course.objects.get(code=code)
